@@ -1,48 +1,95 @@
 import java.util.Scanner;
 import java.awt.*;
+import java.awt.event.*;
 
-class RScalingOrigin extends Frame {
-    int x1, y1, x2, y2;
-    float sx, sy;
-    int px1, px2, py1, py2;
+class RScalingOriginTriangle extends Frame {
+    int rabinx1, rabiny1, rabinx2, rabiny2, rabinx3, rabiny3;
+    float rabinsx, rabinsy;
+    int rabinpx1, rabinpy1, rabinpx2, rabinpy2, rabinpx3, rabinpy3;
 
-    public RScalingOrigin() {
+    private final int WINDOW_WIDTH = 800;
+    private final int WINDOW_HEIGHT = 800;
+
+    public RScalingOriginTriangle() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter x1");
-        x1 = sc.nextInt();
-        System.out.println("Enter y1");
-        y1 = sc.nextInt();
-        System.out.println("Enter x2");
-        x2 = sc.nextInt();
-        System.out.println("Enter y2");
-        y2 = sc.nextInt();
+        System.out.println("Enter x1 (relative to center)");
+        rabinx1 = sc.nextInt();
+        System.out.println("Enter y1 (relative to center)");
+        rabiny1 = sc.nextInt();
+        System.out.println("Enter x2 (relative to center)");
+        rabinx2 = sc.nextInt();
+        System.out.println("Enter y2 (relative to center)");
+        rabiny2 = sc.nextInt();
+        System.out.println("Enter x3 (relative to center)");
+        rabinx3 = sc.nextInt();
+        System.out.println("Enter y3 (relative to center)");
+        rabiny3 = sc.nextInt();
         System.out.println("Enter scaling factor sx");
-        sx = sc.nextFloat();
+        rabinsx = sc.nextFloat();
         System.out.println("Enter scaling factor sy");
-        sy = sc.nextFloat();
+        rabinsy = sc.nextFloat();
+        sc.close();
 
-        this.setTitle("Line Scaling");
+        rabinpx1 = (int)(rabinx1 * rabinsx);
+        rabinpy1 = (int)(rabiny1 * rabinsy);
+        rabinpx2 = (int)(rabinx2 * rabinsx);
+        rabinpy2 = (int)(rabiny2 * rabinsy);
+        rabinpx3 = (int)(rabinx3 * rabinsx);
+        rabinpy3 = (int)(rabiny3 * rabinsy);
+
+        this.setTitle("Triangle Scaling");
         this.setLayout(null);
-        this.setBounds(100, 100, 800, 800);
+        this.setBounds(100, 100, WINDOW_WIDTH, WINDOW_HEIGHT);
         this.setVisible(true);
 
-        // Scaling about origin (0,0)
-        px1 = (int)(x1 * sx);
-        py1 = (int)(y1 * sy);
-        px2 = (int)(x2 * sx);
-        py2 = (int)(y2 * sy);
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                System.exit(0);
+            }
+        });
+    }
+
+    private Point toAWTCoords(int x, int y) {
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+        return new Point(centerX + x, centerY - y);
     }
 
     public void paint(Graphics g) {
-        g.drawLine(x1, y1, x2, y2);
-        g.drawString("before scaling", x1, y1);
-        
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+
+        g.setColor(Color.BLACK);
+        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+        g.drawLine(0, centerY, getWidth(), centerY);
+        g.drawLine(centerX, 0, centerX, getHeight());
+
+        g.drawLine(getWidth() - 10, centerY - 3, getWidth(), centerY);
+        g.drawLine(getWidth() - 10, centerY + 3, getWidth(), centerY);
+        g.drawLine(centerX - 3, 10, centerX, 0);
+        g.drawLine(centerX + 3, 10, centerX, 0);
+
+        g.setColor(Color.BLUE);
+        Point p1_orig_awt = toAWTCoords(rabinx1, rabiny1);
+        Point p2_orig_awt = toAWTCoords(rabinx2, rabiny2);
+        Point p3_orig_awt = toAWTCoords(rabinx3, rabiny3);
+        g.drawLine(p1_orig_awt.x, p1_orig_awt.y, p2_orig_awt.x, p2_orig_awt.y);
+        g.drawLine(p2_orig_awt.x, p2_orig_awt.y, p3_orig_awt.x, p3_orig_awt.y);
+        g.drawLine(p3_orig_awt.x, p3_orig_awt.y, p1_orig_awt.x, p1_orig_awt.y);
+        g.drawString("before scaling", p1_orig_awt.x, p1_orig_awt.y - 5);
+
         g.setColor(Color.RED);
-        g.drawLine(px1, py1, px2, py2);
-        g.drawString("after scaling", px1, py1);
+        Point p1_scaled_awt = toAWTCoords(rabinpx1, rabinpy1);
+        Point p2_scaled_awt = toAWTCoords(rabinpx2, rabinpy2);
+        Point p3_scaled_awt = toAWTCoords(rabinpx3, rabinpy3);
+        g.drawLine(p1_scaled_awt.x, p1_scaled_awt.y, p2_scaled_awt.x, p2_scaled_awt.y);
+        g.drawLine(p2_scaled_awt.x, p2_scaled_awt.y, p3_scaled_awt.x, p3_scaled_awt.y);
+        g.drawLine(p3_scaled_awt.x, p3_scaled_awt.y, p1_scaled_awt.x, p1_scaled_awt.y);
+        g.drawString("after scaling", p1_scaled_awt.x, p1_scaled_awt.y - 5);
     }
 
     public static void main(String[] args) {
-        new RScalingOrigin();
+        new RScalingOriginTriangle();
     }
 }
