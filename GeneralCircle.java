@@ -2,9 +2,8 @@ import java.util.Scanner;
 import java.awt.*;
 import java.awt.event.*;
 
-class RDrawFilledRectangle extends Frame {
-    int rabinCenterX, rabinCenterY;
-    int rabinRectWidth, rabinRectHeight;
+class RParametricCircle extends Frame {
+    int rabinCenterX, rabinCenterY, rabinRadius;
 
     private final int WINDOW_WIDTH = 800;
     private final int WINDOW_HEIGHT = 800;
@@ -13,19 +12,17 @@ class RDrawFilledRectangle extends Frame {
     private final int LEGEND_SPACING = 20;
     private final int LEGEND_BOX_SIZE = 15;
 
-    public RDrawFilledRectangle() {
+    public RParametricCircle() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the x-coordinate of the rectangle center (relative to window center):");
+        System.out.println("Enter the x-coordinate of the center (relative to window center):");
         rabinCenterX = sc.nextInt();
-        System.out.println("Enter the y-coordinate of the rectangle center (relative to window center):");
+        System.out.println("Enter the y-coordinate of the center (relative to window center):");
         rabinCenterY = sc.nextInt();
-        System.out.println("Enter the width of the rectangle:");
-        rabinRectWidth = sc.nextInt();
-        System.out.println("Enter the height of the rectangle:");
-        rabinRectHeight = sc.nextInt();
+        System.out.println("Enter the radius of the circle:");
+        rabinRadius = sc.nextInt();
         sc.close();
 
-        this.setTitle("Draw Filled Rectangle");
+        this.setTitle("Parametric Circle Drawing");
         this.setLayout(null);
         this.setBounds(100, 100, WINDOW_WIDTH, WINDOW_HEIGHT);
         this.setVisible(true);
@@ -58,18 +55,15 @@ class RDrawFilledRectangle extends Frame {
         g.drawLine(centerX - 3, 10, centerX, 0);
         g.drawLine(centerX + 3, 10, centerX, 0);
 
-        // Calculate the top-left corner of the rectangle in standard coordinates
-        int rectTopLeftX_std = rabinCenterX - rabinRectWidth / 2;
-        int rectTopLeftY_std = rabinCenterY + rabinRectHeight / 2; // Y is inverted in AWT
-
-        // Convert the top-left corner to AWT coordinates
-        Point rectTopLeft_awt = toAWTCoords(rectTopLeftX_std, rectTopLeftY_std);
-
-        // Draw the filled rectangle
         g.setColor(Color.RED);
-        g.fillRect(rectTopLeft_awt.x, rectTopLeft_awt.y, rabinRectWidth, rabinRectHeight);
+        for (double rabinangle = 0; rabinangle <= 2 * Math.PI; rabinangle += 0.001) {
+            int rabinx_std = (int) Math.round(rabinCenterX + rabinRadius * Math.cos(rabinangle));
+            int rabiny_std = (int) Math.round(rabinCenterY + rabinRadius * Math.sin(rabinangle));
 
-        // Draw the center marker
+            Point p_awt = toAWTCoords(rabinx_std, rabiny_std);
+            g.fillRect(p_awt.x, p_awt.y, 1, 1);
+        }
+
         g.setColor(Color.BLUE);
         Point center_awt = toAWTCoords(rabinCenterX, rabinCenterY);
         g.fillOval(center_awt.x - 4, center_awt.y - 4, 8, 8);
@@ -82,13 +76,13 @@ class RDrawFilledRectangle extends Frame {
         g.setColor(Color.BLUE);
         g.fillRect(legendX, legendY, LEGEND_BOX_SIZE, LEGEND_BOX_SIZE);
         g.setColor(Color.BLACK);
-        g.drawString("Rectangle Center", legendX + LEGEND_BOX_SIZE + 5, legendY + LEGEND_BOX_SIZE - 3);
+        g.drawString("Circle Center", legendX + LEGEND_BOX_SIZE + 5, legendY + LEGEND_BOX_SIZE - 3);
 
         legendY += LEGEND_SPACING;
         g.setColor(Color.RED);
         g.fillRect(legendX, legendY, LEGEND_BOX_SIZE, LEGEND_BOX_SIZE);
         g.setColor(Color.BLACK);
-        g.drawString("Drawn Filled Rectangle", legendX + LEGEND_BOX_SIZE + 5, legendY + LEGEND_BOX_SIZE - 3);
+        g.drawString("Drawn Circle", legendX + LEGEND_BOX_SIZE + 5, legendY + LEGEND_BOX_SIZE - 3);
 
         legendY += LEGEND_SPACING;
         g.setColor(Color.BLACK);
@@ -96,6 +90,6 @@ class RDrawFilledRectangle extends Frame {
     }
 
     public static void main(String[] args) {
-        new RDrawFilledRectangle();
+        new RParametricCircle();
     }
 }
